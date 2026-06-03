@@ -1,7 +1,9 @@
 pandas
 numpy
+scikit-learn
 matplotlib
 seaborn
-jupyter
-scikit-learn
-scipy
+pytest
+mlflow
+fastapi
+uvicorn

@@ -1,17 +1,18 @@
-name: Python CI
+name: CI
 
 on:
   push:
     branches:
       - main
-      - task-1
 
 jobs:
-  build:
+  test:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set Up Python
@@ -23,5 +24,11 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: CI Passed
-        run: echo "Workflow completed successfully!"
+      - name: Run Flake8
+        run: |
+          pip install flake8
+          flake8 .
+
+      - name: Run Tests
+        run: |
+          python -m pytest

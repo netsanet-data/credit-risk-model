@@ -176,4 +176,64 @@ def build_pipeline(df):
     )
 
     return preprocessor
+def create_rfm_features(df):
 
+    snapshot_date = df["TransactionStartTime"].max()
+
+    rfm = df.groupby("CustomerId").agg({
+        "TransactionStartTime": lambda x: (snapshot_date - x.max()).days,
+        "TransactionId": "count",
+        "Amount": "sum"
+    })
+
+    rfm.columns = [
+        "Recency",
+        "Frequency",
+        "Monetary"
+    ]
+
+    return rfm
+def create_high_risk_label(rfm):
+
+    scaler = StandardScaler()
+
+    rfm_scaled = scaler.fit_transform(
+        rfm[["Recency", "Frequency", "Monetary"]]
+    )
+
+    kmeans = KMeans(
+        n_clusters=3,
+        random_state=42
+    )
+
+    rfm["Cluster"] = kmeans.fit_predict(
+        rfm_scaled
+    )
+
+    cluster_summary = rfm.groupby(
+        "Cluster"
+    )[["Recency", "Frequency", "Monetary"]].mean()
+
+    high_risk_cluster = cluster_summary[
+        "Frequency"
+    ].idxmin()
+
+    rfm["is_high_risk"] = (
+        rfm["Cluster"] == high_risk_cluster
+    ).astype(int)
+
+    return rfm
+def merge_risk_label(df, rfm):
+
+    if "CustomerId" not in rfm.columns:
+        rfm = rfm.reset_index()
+
+    df = df.merge(
+        rfm[
+            ["CustomerId", "is_high_risk"]
+        ],
+        on="CustomerId",
+        how="left"
+    )
+
+    return df
