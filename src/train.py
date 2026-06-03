@@ -174,3 +174,34 @@ def log_model_to_mlflow(
             model,
             "credit_risk_model"
         )
+
+
+if __name__ == "__main__":
+
+    df = load_data()
+
+    X_train, X_test, y_train, y_test = split_data(
+        df
+    )
+
+    model = train_logistic_regression(
+        X_train,
+        y_train
+    )
+
+    results = evaluate_model(
+        model,
+        X_test,
+        y_test
+    )
+
+    log_model_to_mlflow(
+        model,
+        results["accuracy"],
+        results["precision"],
+        results["recall"],
+        results["f1"],
+        results["roc_auc"]
+    )
+
+    print(results)
