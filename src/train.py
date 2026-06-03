@@ -42,6 +42,8 @@ def split_data(df):
         test_size=0.2,
         random_state=42
     )
+
+
 def train_logistic_regression(
     X_train,
     y_train
@@ -101,6 +103,8 @@ def evaluate_model(
     }
 
     return results
+
+
 def tune_random_forest(
     X_train,
     y_train
@@ -128,6 +132,8 @@ def tune_random_forest(
     )
 
     return grid_search.best_estimator_
+
+
 def log_model_to_mlflow(
     model,
     accuracy,

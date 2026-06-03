@@ -11,11 +11,15 @@ from sklearn.preprocessing import (
 )
 
 from sklearn.cluster import KMeans
+
+
 def load_data(path):
     """
     Load raw transaction data
     """
     return pd.read_csv(path)
+
+
 def create_aggregate_features(df):
 
     agg_df = df.groupby("CustomerId").agg(
@@ -26,6 +30,8 @@ def create_aggregate_features(df):
     ).reset_index()
 
     return agg_df
+
+
 def extract_datetime_features(df):
 
     df["TransactionStartTime"] = pd.to_datetime(
@@ -49,6 +55,8 @@ def extract_datetime_features(df):
     )
 
     return df
+
+
 def calculate_rfm(df):
 
     snapshot_date = (
@@ -76,6 +84,8 @@ def calculate_rfm(df):
     ).reset_index()
 
     return rfm
+
+
 def create_proxy_target(df):
 
     rfm = calculate_rfm(df)
@@ -115,6 +125,8 @@ def create_proxy_target(df):
     return rfm[
         ["CustomerId", "is_high_risk"]
     ]
+
+
 def build_pipeline(df):
 
     categorical_columns = [
@@ -176,6 +188,8 @@ def build_pipeline(df):
     )
 
     return preprocessor
+
+
 def create_rfm_features(df):
 
     snapshot_date = df["TransactionStartTime"].max()
@@ -193,6 +207,8 @@ def create_rfm_features(df):
     ]
 
     return rfm
+
+
 def create_high_risk_label(rfm):
 
     scaler = StandardScaler()
@@ -223,6 +239,8 @@ def create_high_risk_label(rfm):
     ).astype(int)
 
     return rfm
+
+
 def merge_risk_label(df, rfm):
 
     if "CustomerId" not in rfm.columns:
